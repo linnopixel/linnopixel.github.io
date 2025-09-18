@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tips Debian dan Perangkat Lunak Gratis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .sidebar {
+            background-color: #2a2a2a;
+        }
+        .content {
+            background-color: #1a1a1a;
+        }
+        .main-container {
+            height: 100vh;
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar w-64 p-4 shadow-lg flex-shrink-0 transition-all duration-300 transform -translate-x-full md:translate-x-0 overflow-y-auto">
+            <h1 class="text-2xl font-bold mb-6 text-gray-200">Notebook</h1>
+            
+            <!-- Search bar -->
+            <div class="mb-6">
+                <input type="text" placeholder="Cari..." class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Navigation menu -->
+            <nav>
+                <!-- Kategori: Debian Tips -->
+                <div class="mb-4">
+                    <button class="w-full text-left font-medium text-lg text-gray-300 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center justify-between" onclick="toggleMenu('debian-tips')">
+                        <span class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L12 14.5m0 0L14.25 17m-2.25-2.25V5m0 0a2 2 0 100-4m0 4a2 2 0 110-4m0 4z"></path></svg>
+                            Tips Debian
+                        </span>
+                        <svg class="w-4 h-4 transition-transform duration-200 transform" id="debian-tips-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <ul id="debian-tips-menu" class="space-y-2 mt-2 pl-4 hidden">
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('apt-management')">Manajemen Paket APT</a></li>
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('systemd-basics')">Dasar-dasar Systemd</a></li>
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('bash-shortcuts')">Trik dan Pintasan Bash</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Kategori: Perangkat Lunak Gratis -->
+                <div class="mb-4">
+                    <button class="w-full text-left font-medium text-lg text-gray-300 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 flex items-center justify-between" onclick="toggleMenu('free-software')">
+                        <span class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-.95 1.636-.95 2.062 0l2.365 5.263 5.483.795c1.042.15 1.45 1.414.654 2.193l-3.987 3.89 1.15 5.465c.22 1.04-.925 1.838-1.849 1.378L12 20.358l-5.465 2.875c-.924.46-2.069-.338-1.849-1.378l1.15-5.465-3.987-3.89c-.796-.779-.388-2.043.654-2.193l5.483-.795L10.325 4.317z"></path></svg>
+                            Perangkat Lunak Gratis
+                        </span>
+                        <svg class="w-4 h-4 transition-transform duration-200 transform" id="free-software-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <ul id="free-software-menu" class="space-y-2 mt-2 pl-4 hidden">
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('libreoffice')">LibreOffice: Alternatif Microsoft Office</a></li>
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('gimp')">GIMP: Editor Gambar Kuat</a></li>
+                        <li><a href="#" class="block text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200" onclick="showContent('firefox')">Firefox: Browser Privasi Terjaga</a></li>
+                    </ul>
+                </div>
+
+                <!-- Footer nav for mobile -->
+                <div class="md:hidden mt-8">
+                    <button id="close-sidebar-btn" class="w-full text-center text-sm text-white bg-blue-600 hover:bg-blue-700 py-2 rounded-lg">Tutup Menu</button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main content area -->
+        <main class="flex-grow p-8 overflow-y-auto content relative">
+            
+            <!-- Mobile menu button -->
+            <button id="open-sidebar-btn" class="md:hidden absolute top-4 left-4 p-2 rounded-lg bg-gray-700 text-white z-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+
+            <!-- Content placeholder -->
+            <div id="content-display" class="prose prose-invert max-w-none">
+                <h1 class="text-3xl font-bold mb-4">Selamat Datang di Notebook Tips Debian & Perangkat Lunak Gratis</h1>
+                <p class="text-gray-300">
+                    Di sini Anda akan menemukan berbagai tips praktis untuk menggunakan sistem operasi Debian, mulai dari manajemen paket hingga pintasan terminal. Selain itu, kami juga menyediakan ulasan tentang perangkat lunak gratis yang bisa menjadi alternatif hebat untuk aplikasi komersial.
+                </p>
+                <p class="text-gray-300 mt-4">
+                    Silakan pilih topik dari menu di samping untuk memulai.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Content data
+        const contents = {
+            'apt-management': {
+                title: 'Manajemen Paket APT di Debian',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">Manajemen Paket APT di Debian</h2>
+                    <p class="text-gray-300">Sistem manajemen paket APT (Advanced Package Tool) adalah inti dari Debian. Menguasai APT akan memudahkan Anda dalam mengelola perangkat lunak di sistem Anda. Berikut adalah beberapa perintah dasar yang wajib diketahui:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt update</code>: Perintah ini menyinkronkan indeks paket dari sumber yang Anda tentukan. Ini sangat penting untuk mendapatkan informasi terbaru tentang versi paket yang tersedia.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt upgrade</code>: Setelah melakukan update, perintah ini akan meng-upgrade semua paket yang sudah terinstal ke versi terbaru.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt install [nama-paket]</code>: Digunakan untuk menginstal paket baru.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt remove [nama-paket]</code>: Menghapus paket, tetapi file konfigurasi mungkin tersisa.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt autoremove</code>: Menghapus paket yang tidak lagi diperlukan (seperti dependensi yang sudah tidak digunakan).
+                        </li>
+                    </ul>
+                `
+            },
+            'systemd-basics': {
+                title: 'Dasar-dasar Systemd',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">Dasar-dasar Systemd</h2>
+                    <p class="text-gray-300">Systemd adalah manajer sistem dan layanan yang modern untuk Debian. Berikut adalah beberapa perintah dasar untuk mengelola layanan:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo systemctl start [nama-layanan]</code>: Memulai layanan.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo systemctl stop [nama-layanan]</code>: Menghentikan layanan.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo systemctl status [nama-layanan]</code>: Menampilkan status layanan.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo systemctl enable [nama-layanan]</code>: Mengaktifkan layanan untuk berjalan secara otomatis saat boot.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo systemctl disable [nama-layanan]</code>: Menonaktifkan layanan dari boot otomatis.
+                        </li>
+                    </ul>
+                `
+            },
+            'bash-shortcuts': {
+                title: 'Trik dan Pintasan Bash',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">Trik dan Pintasan Bash</h2>
+                    <p class="text-gray-300">Menggunakan terminal menjadi lebih efisien dengan pintasan keyboard. Berikut adalah beberapa pintasan Bash yang paling berguna:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">Ctrl + C</code>: Menghentikan proses yang sedang berjalan.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">Ctrl + L</code>: Membersihkan layar terminal.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">Ctrl + R</code>: Mencari perintah sebelumnya dalam riwayat.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">Tab</code>: Melengkapi nama file atau perintah secara otomatis.
+                        </li>
+                        <li>
+                            <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">!!</code>: Mengulang perintah terakhir yang dieksekusi.
+                        </li>
+                    </ul>
+                `
+            },
+            'libreoffice': {
+                title: 'LibreOffice: Alternatif Microsoft Office',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">LibreOffice: Alternatif Microsoft Office</h2>
+                    <p class="text-gray-300">LibreOffice adalah suite produktivitas kantor gratis dan sumber terbuka yang kuat. Ia menyediakan semua aplikasi utama yang Anda butuhkan, seperti:</p>
+                    <ul class="list-disc list-inside space-y-2 mt-4">
+                        <li>
+                            <strong>Writer</strong>: Pengolah kata yang sebanding dengan Microsoft Word.
+                        </li>
+                        <li>
+                            <strong>Calc</strong>: Spreadsheet yang berfungsi seperti Microsoft Excel.
+                        </li>
+                        <li>
+                            <strong>Impress</strong>: Aplikasi presentasi, mirip dengan Microsoft PowerPoint.
+                        </li>
+                        <li>
+                            <strong>Draw</strong>: Alat untuk membuat diagram dan grafik vektor.
+                        </li>
+                        <li>
+                            <strong>Base</strong>: Sistem manajemen database.
+                        </li>
+                        <li>
+                            <strong>Math</strong>: Editor untuk membuat formula matematika.
+                        </li>
+                    </ul>
+                    <p class="text-gray-300 mt-4">Anda bisa menginstalnya dengan mudah di Debian menggunakan perintah <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt install libreoffice</code>.</p>
+                `
+            },
+            'gimp': {
+                title: 'GIMP: Editor Gambar Kuat',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">GIMP: Editor Gambar Kuat</h2>
+                    <p class="text-gray-300">GIMP (GNU Image Manipulation Program) adalah editor gambar gratis yang sangat populer. Meskipun gratis, GIMP menawarkan fitur-fitur profesional yang sering ditemukan di perangkat lunak berbayar seperti Adobe Photoshop.</p>
+                    <p class="text-gray-300 mt-4">Beberapa fitur GIMP termasuk dukungan untuk lapisan (layers), filter, kuas yang dapat disesuaikan, dan alat seleksi yang canggih. GIMP mendukung berbagai format gambar, termasuk PSD (format file Photoshop), sehingga Anda dapat berkolaborasi dengan pengguna Photoshop.</p>
+                    <p class="text-gray-300 mt-4">Anda dapat menginstal GIMP dengan perintah <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt install gimp</code>.</p>
+                `
+            },
+            'firefox': {
+                title: 'Firefox: Browser Privasi Terjaga',
+                html: `
+                    <h2 class="text-2xl font-semibold mb-2">Firefox: Browser Privasi Terjaga</h2>
+                    <p class="text-gray-300">Mozilla Firefox adalah browser web sumber terbuka yang berfokus pada privasi dan keamanan. Ia tidak seperti browser lainnya yang dimiliki oleh perusahaan besar yang mengumpulkan data pengguna.</p>
+                    <p class="text-gray-300 mt-4">Firefox menawarkan fitur-fitur seperti perlindungan pelacakan yang kuat, pengelola kata sandi bawaan, dan kustomisasi yang luas melalui ekstensi. Ini adalah pilihan yang sangat baik bagi siapa saja yang peduli dengan privasi online mereka.</p>
+                    <p class="text-gray-300 mt-4">Firefox biasanya sudah terinstal di Debian, tetapi jika tidak, Anda bisa menginstalnya dengan perintah <code class="bg-gray-700 text-yellow-300 p-1 rounded-md">sudo apt install firefox-esr</code>.</p>
+                `
+            }
+        };
+
+        const contentDisplay = document.getElementById('content-display');
+        const sidebar = document.getElementById('sidebar');
+        const openBtn = document.getElementById('open-sidebar-btn');
+        const closeBtn = document.getElementById('close-sidebar-btn');
+
+        // Function to show content
+        function showContent(id) {
+            if (contents[id]) {
+                contentDisplay.innerHTML = contents[id].html;
+            }
+            // For mobile, hide the sidebar
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+        window.showContent = showContent; // Make function globally accessible
+
+        // Function to toggle sidebar menu
+        function toggleMenu(id) {
+            const menu = document.getElementById(id + '-menu');
+            const arrow = document.getElementById(id + '-arrow');
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+        window.toggleMenu = toggleMenu; // Make function globally accessible
+
+        // Mobile sidebar toggle
+        openBtn.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+        });
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+        });
+
+    </script>
+
+</body>
+</html>
