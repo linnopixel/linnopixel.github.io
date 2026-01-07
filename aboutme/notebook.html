@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook Santai</title>
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+        .sidebar {
+            background-color: #262626;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+            z-index: 10;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+        .scroll-mt-24 {
+            scroll-margin-top: 6rem;
+        }
+        .active-menu {
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-btn" class="md:hidden fixed top-4 right-4 z-20 p-2 rounded-md bg-gray-700 text-white">
+        <i class="fas fa-bars w-6 h-6"></i>
+    </button>
+
+    <!-- Sidebar / Navigation -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 md:relative md:w-80 flex-shrink-0 p-6 overflow-y-auto">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold">Notebook</h1>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-8">
+            <input type="text" id="search-input" placeholder="Cari... biar ketemu" class="w-full p-2 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav>
+            <ul id="main-nav" class="space-y-4 text-gray-400">
+                <li class="group">
+                    <div class="flex items-center cursor-pointer transition-colors hover:text-white toggle-menu">
+                        <i class="fab fa-linux w-5 h-5 mr-2"></i>
+                        <span class="flex-1">Linux</span>
+                        <i class="fas fa-caret-right transition-transform duration-200"></i>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-2 hidden sub-menu">
+                        <li><a href="#instalasi-dns" class="hover:text-white transition-colors">Instalasi DNS Server Bind9</a></li>
+                    </ul>
+                </li>
+                <li class="group">
+                    <div class="flex items-center cursor-pointer transition-colors hover:text-white toggle-menu">
+                        <i class="fas fa-network-wired w-5 h-5 mr-2"></i>
+                        <span class="flex-1">Mikrotik</span>
+                        <i class="fas fa-caret-right transition-transform duration-200"></i>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-2 hidden sub-menu">
+                        <li><a href="#konfigurasi-dhcp" class="hover:text-white transition-colors">Konfigurasi DHCP</a></li>
+                        <li><a href="#firewall-rules" class="hover:text-white transition-colors">Firewall Rules</a></li>
+                    </ul>
+                </li>
+                <li class="group">
+                    <div class="flex items-center cursor-pointer transition-colors hover:text-white toggle-menu">
+                        <i class="fas fa-code w-5 h-5 mr-2"></i>
+                        <span class="flex-1">Coding Web</span>
+                        <i class="fas fa-caret-right transition-transform duration-200"></i>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-2 hidden sub-menu">
+                        <li><a href="#html-dasar" class="hover:text-white transition-colors">HTML Dasar</a></li>
+                        <li><a href="#css-lanjutan" class="hover:text-white transition-colors">CSS Lanjutan</a></li>
+                    </ul>
+                </li>
+                <li class="group">
+                    <div class="flex items-center cursor-pointer transition-colors hover:text-white toggle-menu">
+                        <i class="fas fa-microchip w-5 h-5 mr-2"></i>
+                        <span class="flex-1">IoT ESP32</span>
+                        <i class="fas fa-caret-right transition-transform duration-200"></i>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-2 hidden sub-menu">
+                        <li><a href="#setup-arduino-ide" class="hover:text-white transition-colors">Setup Arduino IDE</a></li>
+                        <li><a href="#project-smart-home" class="hover:text-white transition-colors">Project Smart Home</a></li>
+                    </ul>
+                </li>
+                <li class="group">
+                    <a href="https://github.com/linnopixel" class="flex items-center cursor-pointer transition-colors hover:text-white">
+                        <i class="fab fa-github w-5 h-5 mr-2"></i>
+                        <span>Github</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-12 overflow-y-auto">
+        <div class="flex justify-between items-start mb-6">
+            <h2 class="text-3xl md:text-5xl font-bold">Panduan Santai: Setting DNS Server (bind9) di Debian</h2>
+            <div class="hidden md:block w-64 text-sm text-gray-400 ml-8 sticky top-0">
+                <ul class="space-y-2">
+                    <li><a href="#apa-itu-dns" class="hover:text-white transition-colors toc-link">Apa itu DNS</a></li>
+                    <li><a href="#instalasi-konfigurasi" class="hover:text-white transition-colors toc-link">Instalasi dan Konfigurasi DNS server di Debian (bind9)</a></li>
+                    <ul class="ml-4 space-y-2">
+                        <li><a href="#install-bind9" class="hover:text-white transition-colors toc-link">Install bind9</a></li>
+                        <li><a href="#konfigurasi-bind9" class="hover:text-white transition-colors toc-link">Konfigurasi bind9</a></li>
+                        <li><a href="#menambahkan-domain" class="hover:text-white transition-colors toc-link">Menambahkan Domain ke Web Server</a></li>
+                        <li><a href="#testing-client" class="hover:text-white transition-colors toc-link">Testing Pada Client (linux)</a></li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+
+        <section id="apa-itu-dns" class="pb-12 mb-12 border-b-2 border-gray-700 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-semibold mb-4">DNS tuh apaan, sih?</h3>
+            <div class="text-base leading-relaxed text-gray-300 space-y-4">
+                <p>Intinya, <b>Domain Name System (DNS)</b> itu kayak buku telepon buat internet. Kerjanya ngubah nama domain yang gampang diingat, kayak `google.com`, jadi alamat IP yang isinya angka-angka (`142.250.190.46`), biar komputer kita tahu ke mana harus nyambung. Jadi, lo gak perlu repot-repot hafalin IP address-nya deh! </p>
+            </div>
+        </section>
+
+        <section id="instalasi-konfigurasi" class="pb-12 mb-12 border-b-2 border-gray-700 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-semibold mb-4">Langkah-Langkah: Instalasi & Konfigurasi DNS Server (bind9) di Debian</h3>
+            <div class="text-base leading-relaxed text-gray-300 space-y-4">
+                <section id="install-bind9" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Install bind9, Simpel Banget!</h4>
+                    <p>Pertama, pastiin dulu sistem lo udah di-update, terus langsung aja install paket bind9-nya pakai perintah ini:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo apt update
+sudo apt install bind9</code></pre>
+                </section>
+                <section id="konfigurasi-bind9" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Konfigurasi bind9, Anti Pusing!</h4>
+                    <p>Udah beres instalasi? Mantap! Sekarang kita lanjut setting file <code>named.conf.local</code> buat nentuin zona forward sama reverse-nya. Jangan lupa, ganti <code>contoh.com</code> pake domain lo sendiri dan <code>192.168.1</code> pake subnet IP lo, ya.</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>// Konfigurasi zona forward (nama ke IP)
+zone "contoh.com" {
+    type master;
+    file "/etc/bind/db.contoh.com";
+};
+
+// Konfigurasi zona reverse (IP ke nama)
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192";
+};</code></pre>
+                    <p>Habis itu, bikin file zona forward <code>db.contoh.com</code>. Caranya gampang kok, tinggal copy file template yang udah ada:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo cp /etc/bind/db.local /etc/bind/db.contoh.com
+sudo nano /etc/bind/db.contoh.com</code></pre>
+                    <p>Isi file <code>db.contoh.com</code>-nya kayak gini:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>$TTL 604800
+@ IN SOA localhost. root.localhost. (
+    2023010101 ; Serial
+    604800     ; Refresh
+    86400      ; Retry
+    2419200    ; Expire
+    604800 )   ; Negative Cache TTL
+;
+@   IN NS   localhost.
+@   IN A    192.168.1.100
+www IN A    192.168.1.100
+mail IN A   192.168.1.101</code></pre>
+                    <p>Terakhir, bikin file zona reverse <code>db.192</code>. Ikutin aja langkah ini:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo cp /etc/bind/db.127 /etc/bind/db.192
+sudo nano /etc/bind/db.192</code></pre>
+                    <p>Isi file <code>db.192</code>:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>$TTL 604800
+@ IN SOA localhost. root.localhost. (
+    2023010101 ; Serial
+    604800     ; Refresh
+    86400      ; Retry
+    2419200    ; Expire
+    604800 )   ; Negative Cache TTL
+;
+@   IN NS   localhost.
+100 IN PTR contoh.com.
+100 IN PTR www.contoh.com.
+101 IN PTR mail.contoh.com.</code></pre>
+                </section>
+                <section id="menambahkan-domain" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Tambah Domain ke Web Server, Gampang Banget!</h4>
+                    <p>Biar domain lo bisa diakses, lo perlu setting virtual host di web server (misalnya Apache atau Nginx). Ini contohnya buat Apache:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo nano /etc/apache2/sites-available/contoh.com.conf</code></pre>
+                    <p>Isi file konfigurasi Apache:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code><VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName contoh.com
+    ServerAlias www.contoh.com
+    DocumentRoot /var/www/contoh.com
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost></code></pre>
+                    <p>Aktifin virtual host-nya, terus restart service-nya:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo a2ensite contoh.com.conf
+sudo systemctl restart apache2</code></pre>
+                </section>
+                <section id="testing-client" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Testing di Client (Linux), Kuy!</h4>
+                    <p>Sekarang, edit file <code>/etc/resolv.conf</code> di client lo biar ngarah ke server DNS yang barusan lo bikin:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>sudo nano /etc/resolv.conf</code></pre>
+                    <p>Tambahin baris ini (ganti IP-nya pake IP server DNS lo):</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>nameserver 192.168.1.100</code></pre>
+                    <p>Abis itu, lo bisa ngetes DNS server-nya udah jalan apa belom pake perintah <code>nslookup</code> atau <code>dig</code>. Kalo keluar info IP-nya, berarti udah berhasil!</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>nslookup www.contoh.com
+dig contoh.com</code></pre>
+                </section>
+            </div>
+        </section>
+
+        <section id="mikrotik" class="pb-12 mb-12 border-b-2 border-gray-700 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-semibold mb-4">Mikrotik, Nih!</h3>
+            <div class="text-base leading-relaxed text-gray-300 space-y-4">
+                <section id="konfigurasi-dhcp" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Setting DHCP, Pake Terminal Aja!</h4>
+                    <p>Buat nyalain DHCP Server di Mikrotik, lo bisa pake perintah setup singkat ini di terminal:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>/ip dhcp-server setup</code></pre>
+                    <p>Ikutin aja petunjuknya, masukin interface, network, gateway, sama DNS server. Atau, lo bisa juga manual gini:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>/ip pool add name=dhcp-pool ranges=192.168.88.10-192.168.88.254
+/ip dhcp-server add name=dhcp-server interface=bridge-local address-pool=dhcp-pool disabled=no
+/ip dhcp-server network add address=192.168.88.0/24 gateway=192.168.88.1 dns-server=8.8.8.8</code></pre>
+                </section>
+                <section id="firewall-rules" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Rules Firewall, Biar Aman!</h4>
+                    <p>Firewall itu gunanya buat ngatur traffic yang masuk-keluar jaringan lo. Ini contoh rule dasar buat ngeblok akses ke IP tertentu dari jaringan lokal lo.</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>/ip firewall filter add chain=forward src-address=192.168.88.150 dst-address=10.0.0.10 protocol=tcp action=drop comment="Blokir akses ke 10.0.0.10"</code></pre>
+                </section>
+            </div>
+        </section>
+
+        <section id="web-coding" class="pb-12 mb-12 border-b-2 border-gray-700 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-semibold mb-4">Ngoding Web, Sikat!</h3>
+            <div class="text-base leading-relaxed text-gray-300 space-y-4">
+                <section id="html-dasar" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">HTML Basics, Gampang!</h4>
+                    <p><b>HTML</b> (HyperText Markup Language) itu bahasa dasar buat bikin halaman web. Setiap web pasti punya struktur dasar yang sama.   </p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Judul Halaman&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Halo, Dunia!&lt;/h1&gt;
+    &lt;p&gt;Ini adalah paragraf pertama saya.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </section>
+                <section id="css-lanjutan" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">CSS Level Up!</h4>
+                    <p>Kalau udah jago dasar-dasarnya, saatnya naik level pake <b>Flexbox</b> dan <b>Grid</b>. Flexbox itu mantap buat ngatur tata letak satu dimensi (baris atau kolom), kalo Grid cocok buat tata letak dua dimensi (baris dan kolom).</p>
+                    <p>Nih, contoh pake Flexbox:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>.container {
+    display: flex;
+    justify-content: center; /* Menempatkan item di tengah secara horizontal */
+    align-items: center;     /* Menempatkan item di tengah secara vertikal */
+}</code></pre>
+                </section>
+            </div>
+        </section>
+
+        <section id="iot-esp32" class="mb-12 scroll-mt-24">
+            <h3 class="text-2xl md:text-3xl font-semibold mb-4">IoT ESP32, Mainin Aja!</h3>
+            <div class="text-base leading-relaxed text-gray-300 space-y-4">
+                <section id="setup-arduino-ide" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Setup Arduino IDE, Sat Set!</h4>
+                    <p>Biar bisa ngoding ESP32 pake Arduino IDE, lo harus tambahin URL board manager-nya dulu. Buka <b>File > Preferences</b> terus tambahin URL ini di kolom <b>Additional Boards Manager URLs</b>:</p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json</code></pre>
+                    <p>Abis itu, buka <b>Tools > Board > Boards Manager</b>, cari "esp32", terus install deh.</p>
+                </section>
+                <section id="project-smart-home" class="mb-6 scroll-mt-24">
+                    <h4 class="text-xl md:text-2xl font-semibold mb-2">Project Smart Home: Nyalain-Matiin LED Pake Web Server!</h4>
+                    <p>Nih, kode dasarnya buat nyalain dan matiin LED yang nyambung ke pin GPIO 23 pake web server sederhana di ESP32. </p>
+                    <pre class="bg-gray-800 p-4 rounded-md text-sm mt-2 overflow-x-auto"><code>#include &lt;WiFi.h&gt;
+#include &lt;WebServer.h&gt;
+
+const char* ssid = "your_SSID";
+const char* password = "your_PASSWORD";
+
+WebServer server(80);
+const int ledPin = 23;
+
+void handleOn() {
+  digitalWrite(ledPin, HIGH);
+  server.send(200, "text/plain", "LED ON");
+}
+
+void handleOff() {
+  digitalWrite(ledPin, LOW);
+  server.send(200, "text/plain", "LED OFF");
+}
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi!");
+  Serial.println(WiFi.localIP());
+
+  server.on("/on", handleOn);
+  server.on("/off", handleOff);
+  server.begin();
+}
+
+void loop() {
+  server.handleClient();
+}</code></pre>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const searchInput = document.getElementById('search-input');
+            const mainNav = document.getElementById('main-nav');
+            const toggleMenus = document.querySelectorAll('.toggle-menu');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            // Buka/tutup sidebar di HP
+            menuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            // Fitur nyari-nyari
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const navItems = mainNav.querySelectorAll('li');
+                navItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Buka/tutup sub-menu
+            toggleMenus.forEach(menu => {
+                menu.addEventListener('click', () => {
+                    const subMenu = menu.nextElementSibling;
+                    if (subMenu && subMenu.classList.contains('sub-menu')) {
+                        subMenu.classList.toggle('hidden');
+                        const caretIcon = menu.querySelector('.fa-caret-right');
+                        if (caretIcon) {
+                            caretIcon.classList.toggle('rotate-90');
+                        }
+                    }
+                });
+            });
+
+            // Scroll mulus dan highlight link yang lagi aktif
+            tocLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.currentTarget.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        window.scrollTo({
+                            top: targetSection.offsetTop,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Highlight link aktif
+                        tocLinks.forEach(l => l.classList.remove('active-menu'));
+                        e.currentTarget.classList.add('active-menu');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berawal dari Penasaran</title>
+    <link rel="icon" href="https://linnopixel.github.io/2/icon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* PALET WARNA BARU: Gelap, Hangat, dan Kontras */
+        :root {
+            --bg-primary: #222831; /* Hitam Tua (Dominan) */
+            --bg-secondary: #393E46; /* Abu-abu Gelap Menengah (Latar Belakang Kartu/Sekunder) */
+            --accent: #948979; /* Coklat Kusam / Aksen Hangat */
+            --text-primary: #DFD0B8; /* Krem Terang (Teks Utama) */
+            --text-secondary: rgba(223, 208, 184, 0.7); /* Teks Sekunder dengan Opacity */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            /* Menggunakan warna yang kontras sedikit lebih gelap dari primary */
+            background: rgba(34, 40, 49, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 600;
+            color: var(--text-primary); 
+            order: -1; 
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--accent);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            order: 1; 
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-primary); 
+            transition: all 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: var(--bg-secondary);
+            overflow: hidden;
+            padding: 2rem;
+            padding-top: 6rem;
+            
+            /* Background Statis */
+            background-image: url('bg.jpg');
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Overlay Gelap, menggunakan warna primary baru */
+            background: rgba(34, 40, 49, 0.7); 
+            z-index: 1;
+        }
+
+        .hero h1, .hero p, .cta-button {
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 300;
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: var(--accent);
+            /* Warna teks tombol menggunakan warna yang kontras dengan accent, yaitu warna primary */
+            color: var(--bg-primary); 
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary); /* Ubah warna teks hover menjadi warna primary */
+            transform: translateY(-3px);
+            /* Box shadow menggunakan warna accent baru */
+            box-shadow: 0 10px 20px rgba(148, 137, 121, 0.3); 
+        }
+
+        /* Story Section */
+        .story {
+            padding: 5rem 5%;
+            background: var(--bg-primary);
+            text-align: center;
+        }
+
+        .story-header {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            font-weight: 600;
+            margin-bottom: 3rem;
+        }
+
+        .story-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .story-image {
+            width: 250px; 
+            height: 250px;
+            /* Menggunakan warna secondary/accent baru untuk latar/border */
+            background: var(--bg-secondary); 
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 5px solid var(--accent);
+            box-shadow: 0 0 0 10px rgba(148, 137, 121, 0.2);
+            flex-shrink: 0;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .story-body {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .story-text {
+            text-align: justify;
+            padding: 0 1rem;
+        }
+        
+        .story-text p {
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .story-quote {
+            padding: 2rem;
+            /* Menggunakan warna secondary baru */
+            background: var(--bg-secondary); 
+            /* Border menggunakan warna accent baru */
+            border-left: 5px solid var(--accent); 
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .story-quote p {
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            line-height: 1.6;
+            margin-bottom: 0;
+            color: var(--text-primary);
+        }
+
+        /* Process Section */
+        .process {
+            padding: 5rem 5%;
+            /* Menggunakan warna secondary baru */
+            background: var(--bg-secondary); 
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 3rem;
+            font-weight: 600;
+        }
+
+        .process-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 2rem;
+            max-width: 800px; 
+            margin: 0 auto;
+        }
+
+        .process-card {
+            /* Menggunakan warna primary baru */
+            background: var(--bg-primary); 
+            padding: 2rem;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .process-card i {
+            /* Menggunakan warna accent baru */
+            font-size: 3rem;
+            color: var(--accent); 
+            margin-bottom: 1rem;
+        }
+
+        .process-card h3 {
+            font-size: clamp(1.3rem, 2vw, 1.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .process-card p {
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            color: var(--text-secondary);
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 5rem 5%;
+            background: var(--bg-primary);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 4 / 5; 
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+            /* Box shadow menggunakan warna accent baru */
+            box-shadow: 0 10px 30px rgba(148, 137, 121, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: -1px; 
+            left: 0;
+            right: 0;
+            padding: 10px;
+            /* Gradient menggunakan warna primary baru */
+            background: linear-gradient(transparent, rgba(34, 40, 49, 0.796));
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h4 {
+            font-size: 13px; 
+            font-weight: 100; 
+            color: var(--text-primary);
+            margin-bottom: -4px;
+            color: rgb(255, 253, 240);
+        }
+
+        .view-all-btn {
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+            /* Border menggunakan warna accent baru */
+            border: 2px solid var(--accent); 
+            color: var(--accent);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Before-After Section */
+        .before-after {
+            padding: 5rem 5%;
+            /* Menggunakan warna secondary baru */
+            background: var(--bg-secondary); 
+        }
+
+        .comparison-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            aspect-ratio: 16 / 9; 
+            height: auto; 
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .comparison-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .after-img {
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+        }
+
+        .slider-line {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+            /* Menggunakan warna accent baru */
+            background: var(--accent); 
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            cursor: ew-resize;
+            z-index: 10;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            /* Menggunakan warna accent baru */
+            background: var(--accent); 
+            color: var(--bg-primary); /* Warna teks handle kontras dengan accent */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .comparison-labels {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto 1rem;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-weight: 500;
+        }
+
+        .before-after-text {
+            text-align: center;
+            max-width: 700px;
+            margin: 2rem auto 0;
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            font-style: italic;
+        }
+
+        /* Journal Section */
+        .journal {
+            padding: 5rem 5%;
+            background: var(--bg-primary);
+        }
+
+        .journal-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 2rem;
+            max-width: 800px; 
+            margin: 0 auto;
+        }
+
+        .journal-card {
+            /* Menggunakan warna secondary baru */
+            background: var(--bg-secondary); 
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .journal-img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .journal-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(80%); 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .journal-content {
+            padding: 1.5rem;
+        }
+
+        .journal-content h3 {
+            font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+            /* Menggunakan warna accent baru */
+            color: var(--accent); 
+            margin-bottom: 0.8rem;
+        }
+
+        .journal-content p {
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 5rem 5%;
+            background: var(--bg-primary); /* Pastikan ini sesuai dengan warna primary */
+        }
+
+        .contact-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-subtitle {
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 0;
+        }
+
+        .social-icons a {
+            /* Menggunakan warna accent baru */
+            color: var(--accent); 
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--text-primary);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary); /* Menggunakan warna secondary baru */
+            /* Border menggunakan warna accent baru */
+            border-top: 1px solid rgba(148, 137, 121, 0.3); 
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            color: rgba(223, 208, 184, 0.7); /* Warna teks footer */
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        
+        @media (min-width: 768px) {
+            .story-content {
+                display: grid;
+                grid-template-areas: 
+                    "image text";
+                grid-template-columns: 250px 1fr;
+                gap: 3rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+
+            .story-image {
+                grid-area: image;
+                margin-bottom: 0;
+            }
+
+            .story-text-wrapper {
+                 grid-area: text;
+                 padding-left: 1rem;
+            }
+            
+            .story-text {
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .journal-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                left: auto;
+                right: 0;
+                width: 30%; 
+                position: fixed;
+                top: 60px;
+                flex-direction: column;
+                /* Menggunakan warna primary baru untuk menu mobile */
+                background: rgba(34, 40, 49, 0.98); 
+                display: none;
+                padding: 1.5rem 2rem;
+                gap: 0.5rem;
+                box-shadow: none; 
+            }
+            
+            .navbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav-menu.active {
+                display: flex; 
+                box-shadow: none; 
+            }
+            
+            .nav-menu li {
+                width: 100%;
+                text-align: right;
+            }
+            
+            .nav-menu a {
+                display: block;
+                padding: 0.4rem 0;
+            }
+
+            .story-content {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-container {
+                aspect-ratio: 16 / 9; 
+                height: auto; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-cards {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .journal-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .story-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            .nav-menu {
+                width: 60%; 
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <span>MICHELLINO</span>
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#story">Story</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#before-after">B & A</a></li>
+            <li><a href="#journal">Journal</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Urge to Learn Everything</h1>
+        <p>Penasaran terhadap dunia luar menjadi inspirasi.</p>
+        <button class="cta-button" onclick="document.getElementById('gallery').scrollIntoView({behavior: 'smooth'})">Lihat Galeri</button>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story" id="story">
+        <h2 class="story-header">Sedikit Cerita</h2>
+        <div class="story-content">
+            <div class="story-image">
+                <img src="pp/pp.jpeg" alt="wujud asli admin">
+            </div>
+            
+            <div class="story-text-wrapper">
+                <div class="story-text">
+                    <p>Iseng browsing Google Maps, jadi sering ngedit screenshoot dari banyak tempat entah itu rumah, tempat nongkrong, atau sekolah buat konten foto.</p>
+                </div>
+                <div class="story-quote">
+                    <p>Proses kreatif adalah tentang pencarian yang tak kenal lelah, pertemuan yang tak terduga, dan pengeditan yang memberi makna.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="process" id="process">
+        <h2 class="section-title">Proses...</h2>
+        <div class="process-cards">
+            <div class="process-card">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <h3>Cari</h3>
+                <p>Lewat Google Maps buat nemuin sisi unik dari banyak tempat.</p>
+            </div>
+            <div class="process-card">
+                <i class="fa-solid fa-eye"></i>
+                <h3>Ketemu</h3>
+                <p>Pilih gambar yang komposisinya bagus dan punya cerita buat diolah.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery" id="gallery">
+        <h2 class="section-title">Koleksi Foto</h2>
+        <div class="gallery-grid">
+            <!-- Placeholder images diperbarui agar lebih konsisten -->
+            <div class="gallery-item" onclick="openLightbox(this, 'koleksi/taman-maluku.jpeg')">
+                <img src="koleksi/taman-maluku.jpeg" alt="Taman Maluku" onerror="this.onerror=null; this.src='https://placehold.co/400x500/222831/DFD0B8?text=Gang+Sepi';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Taman Maluku</h4>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this, 'koleksi/jalan.jpeg')">
+                <img src="koleksi/jalan.jpeg" alt="Persimpangan Kota yang Ramai" onerror="this.onerror=null; this.src='https://placehold.co/400x500/222831/DFD0B8?text=Persimpangan+Kota';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Jl. Ahmad Yani, Jember</h4>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this, 'koleksi/upacara.avif')">
+                <img src="koleksi/upacara.avif" alt="Upacara Sekolah" onerror="this.onerror=null; this.src='koleksi/upacara.avif';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Upacara Sekolah</h4>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this, 'koleksi/asrama.jpeg')">
+                <img src="koleksi/asrama.jpeg" alt="Hamparan Sawah Hijau" onerror="this.onerror=null; this.src='koleksi/asrama.jpeg';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Asrama Jember</h4>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this, 'https://static01.nyt.com/images/2020/09/12/world/12china-schools-1/12china-schools-1-mediumSquareAt3X.jpg')">
+                <img src="https://static01.nyt.com/images/2020/09/12/world/12china-schools-1/12china-schools-1-mediumSquareAt3X.jpg" alt="Chinese Students" onerror="this.onerror=null; this.src='https://static01.nyt.com/images/2020/09/12/world/12china-schools-1/12china-schools-1-mediumSquareAt3X.jpg';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Chinese School</h4>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this, 'koleksi/jl-wr-s.jpeg')">
+                <img src="koleksi/jl-wr-s.jpeg" alt="Malam di Pusat Kota" onerror="this.onerror=null; this.src='koleksi/jl-wr-s.jpeg';" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Jl. WR Supratman, Jember</h4>
+                </div>
+            </div>
+        </div>
+        <button class="view-all-btn">Lihat Semua Koleksi</button>
+    </section>
+
+    <!-- Before-After Section -->
+    <section class="before-after" id="before-after">
+        <h2 class="section-title">Before & After</h2>
+        <!-- Ganti warna teks p menjadi warna accent baru -->
+        <p style="text-align: center; margin-top: -40px; color: var(--accent);">*geser garisnya*</p> 
+        <div class="comparison-labels">
+            <span>Before</span>
+            <span>After</span>
+        </div>
+        <div class="comparison-container">
+            <!-- Ganti dengan URL gambar Anda yang sebenarnya -->
+            <img class="comparison-img" src="b.jpeg" alt="Citra Mentah Sebelum Edit">
+            <img class="comparison-img after-img" src="a.jpeg" alt="Karya Setelah Edit">
+            <div class="slider-line" id="sliderLine">
+                <div class="slider-handle">
+                    <i class="fa-solid fa-circle"></i>
+                </div>
+            </div>
+        </div>
+        <p class="before-after-text">"Setiap sentuhan mengubah suasana — bukan hanya warna, tapi juga cerita."</p>
+    </section>
+
+    <!-- Journal Section -->
+    <section class="journal" id="journal">
+        <h2 class="section-title">Makna dari Perjalanan</h2>
+        <div class="journal-cards">
+            <div class="journal-card">
+                <div class="journal-img">
+                    <img src="jurnal/gunung.jpg" alt="Gunung dan Jalan">
+                </div>
+                <div class="journal-content">
+                    <h3>Perspektif Baru</h3>
+                    <p>"Kadang keindahan datang dari tempat yang tak pernah kita niatkan untuk dilihat."</p>
+                </div>
+            </div>
+            <div class="journal-card">
+                <div class="journal-img">
+                    <img src="jurnal/satelit.png" alt="Peta Satelit">
+                </div>
+                <div class="journal-content">
+                    <h3>Tersesat & Menemukan</h3>
+                    <p>"Dalam mencari, kita sering menemukan hal yang lebih berharga dari yang kita cari."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2 class="section-title">Kontak.</h2>
+        <div class="contact-content">
+            <div class="contact-subtitle">Kalau ada pertanyaan, mau kasih saran, atau sekadar nyapa, hubungi lewat media sosial di bawah ini.</div>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/mar.nnow" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://github.com/linnopixel" aria-label="Github"><i class="fa-brands fa-github"></i></a>
+                <a href="https://discord.com/invite/v2M536ZkW3" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Michellino. All Rights Reserved</p>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <i class="fa-solid fa-xmark lightbox-close" onclick="closeLightbox()"></i>
+        <img id="lightboxImg" src="" alt="Gambar Galeri Besar">
+    </div>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Before-After Slider
+        const sliderLine = document.getElementById('sliderLine');
+        const comparisonContainer = document.querySelector('.comparison-container');
+        const afterImg = document.querySelector('.after-img');
+        let isDragging = false;
+
+        function updateSlider(e) {
+            if (!isDragging && e.type !== 'click' && e.type !== 'touchmove') return;
+
+            const rect = comparisonContainer.getBoundingClientRect();
+            let x;
+
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX;
+            } else {
+                x = e.clientX;
+            }
+            
+            x = x - rect.left;
+            
+            let percentage = (x / rect.width) * 100;
+            percentage = Math.max(0, Math.min(100, percentage));
+
+            sliderLine.style.left = percentage + '%';
+            afterImg.style.clipPath = `polygon(${percentage}% 0, 100% 0, 100% 100%, ${percentage}% 100%)`;
+        }
+
+        // Mouse events
+        sliderLine.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+        document.addEventListener('mouseup', () => isDragging = false);
+        document.addEventListener('mousemove', updateSlider);
+
+        // Touch events
+        sliderLine.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault();
+            updateSlider(e);
+        });
+        document.addEventListener('touchend', () => isDragging = false);
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                updateSlider(e);
+            }
+        });
+
+        comparisonContainer.addEventListener('click', updateSlider);
+
+        // Lightbox functions
+        function openLightbox(element, imgUrl) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            
+            lightboxImg.src = imgUrl;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('lightboxImg').src = "";
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
+                closeLightbox();
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        window.onload = () => {
+             sliderLine.style.left = '50%';
+             afterImg.style.clipPath = `polygon(50% 0, 100% 0, 100% 100%, 50% 100%)`;
+        }
+    </script>
+</body>
+</html>
+
