@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal - My Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Menggunakan Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: #38bdf8;
+            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.3);
+        }
+
+        .bg-gradient-main {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+        }
+    </style>
+</head>
+<body class="bg-gradient-main min-h-screen flex flex-col items-center justify-center p-6">
+
+    <!-- Kontainer Utama -->
+    <div class="max-w-4xl w-full space-y-12 py-12">
+        
+        <!-- Bagian Header/Profil -->
+        <header class="text-center space-y-4">
+            <div class="relative inline-block">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 p-1 mx-auto">
+                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-cyan-400 text-3xl">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                </div>
+                <span class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-4 border-slate-900 rounded-full"></span>
+            </div>
+            <h1 class="text-4xl font-bold tracking-tight text-white">Welcome!</h1>
+            <p class="text-slate-400 max-w-md mx-auto">Tempat Proyek, tutorial, dan galeri pribadi. Jelajahi link di bawah.</p>
+        </header>
+
+        <!-- Grid Navigasi -->
+        <nav class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Tutor Debian -->
+            <a href="https://linnopixel.github.io/tutor/" class="glass-card p-6 rounded-2xl flex items-center space-x-5">
+                <div class="w-16 h-16 bg-red-500/10 rounded-xl flex items-center justify-center">
+                    <i class="fa-brands fa-linux text-3xl text-red-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white">Tutor Debian</h2>
+                    <p class="text-slate-400 text-sm">Panduan administrasi server dan linux.</p>
+                </div>
+            </a>
+
+            <!-- About Me -->
+            <a href="https://linnopixel.github.io/aboutme" class="glass-card p-6 rounded-2xl flex items-center space-x-5">
+                <div class="w-16 h-16 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-address-card text-3xl text-blue-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white">About Me</h2>
+                    <p class="text-slate-400 text-sm">Kenali lebih jauh tentang siapa saya.</p>
+                </div>
+            </a>
+
+            <!-- Gallery -->
+            <a href="https://linnopixel.github.io/gallery" class="glass-card p-6 rounded-2xl flex items-center space-x-5">
+                <div class="w-16 h-16 bg-purple-500/10 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-images text-3xl text-purple-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white">Gallery</h2>
+                    <p class="text-slate-400 text-sm">Koleksi foto dan karya desain visual.</p>
+                </div>
+            </a>
+
+            <!-- Bot -->
+            <a href="https://linnopixel.github.io/bot" class="glass-card p-6 rounded-2xl flex items-center space-x-5">
+                <div class="w-16 h-16 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-robot text-3xl text-emerald-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-white">My Bot</h2>
+                    <p class="text-slate-400 text-sm">Layanan otomatis dan bot asisten pribadi.</p>
+                </div>
+            </a>
+
+        </nav>
+
+        <!-- Footer -->
+        <footer class="text-center pt-8 border-t border-slate-800">
+            <p class="text-slate-500 text-sm mb-4 italic">© 2024 Dibuat dengan semangat untuk berbagi.</p>
+            <div class="flex justify-center space-x-8 text-slate-400">
+                <!-- GitHub -->
+                <a href="https://github.com/usernameanda" target="_blank" class="flex flex-col items-center group transition-colors">
+                    <i class="fa-brands fa-github text-2xl group-hover:text-white"></i>
+                    <span class="text-[10px] mt-1 group-hover:text-white uppercase tracking-wider font-bold">GitHub</span>
+                </a>
+                <!-- Discord -->
+                <a href="https://discord.com/users/useridanda" target="_blank" class="flex flex-col items-center group transition-colors">
+                    <i class="fa-brands fa-discord text-2xl group-hover:text-[#5865F2]"></i>
+                    <span class="text-[10px] mt-1 group-hover:text-[#5865F2] uppercase tracking-wider font-bold">Discord</span>
+                </a>
+                <!-- Instagram -->
+                <a href="https://instagram.com/usernameanda" target="_blank" class="flex flex-col items-center group transition-colors">
+                    <i class="fa-brands fa-instagram text-2xl group-hover:text-[#E4405F]"></i>
+                    <span class="text-[10px] mt-1 group-hover:text-[#E4405F] uppercase tracking-wider font-bold">Instagram</span>
+                </a>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
