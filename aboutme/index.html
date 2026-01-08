@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Optimasi untuk RAM kecil & CPU Low-end */
+        /* Optimasi untuk RAM kecil & CPU Low-end (Helio A22) */
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: #0f172a; 
@@ -20,25 +20,28 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Backdrop blur sangat berat untuk Helio A22, kita turunkan nilainya */
+        /* Backdrop blur sangat berat untuk GPU low-end, kita turunkan nilainya */
+        /* Menggunakan background yang lebih solid untuk mengurangi beban rendering */
         .glass {
-            background: rgba(30, 41, 59, 0.7); /* Lebih solid agar kontras tetap baik tanpa blur tinggi */
-            backdrop-filter: blur(4px); /* Turun dari 12px ke 4px agar lancar di HP 1GB RAM */
+            background: rgba(30, 41, 59, 0.8); 
+            backdrop-filter: blur(4px); 
             -webkit-backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Hover yang lebih ringan (menghindari shadow kompleks di mobile) */
+        /* Hover yang lebih ringan untuk menghindari lag di mobile */
         .card-hover {
             transition: transform 0.2s ease-out, background 0.2s ease-out;
-            will-change: transform; /* Memberitahu GPU untuk bersiap */
+            will-change: transform; /* Akselerasi hardware */
         }
         
         @media (hover: hover) {
             .card-hover:hover {
                 border-color: #14b8a6;
                 transform: translateY(-3px);
-                background: rgba(30, 41, 59, 0.9);
+                background: rgba(30, 41, 59, 0.95);
+                /* Shadow disederhanakan */
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
             }
         }
 
@@ -63,8 +66,8 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(6px);
             justify-content: center;
             align-items: center;
             padding: 1rem;
@@ -101,6 +104,7 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
+    <!-- Modal Backdrop -->
     <div id="cert-modal" onclick="closeModal()">
         <button class="absolute top-6 right-6 text-white text-3xl hover:text-teal-400 z-[10000]">
             <i class="fas fa-times"></i>
@@ -114,8 +118,8 @@
             <!-- Header -->
             <header class="flex flex-col items-center text-center mb-16">
                 <div class="relative">
-                    <!-- Blur effect dikurangi radiusnya -->
-                    <div class="absolute -inset-1 bg-teal-500/30 rounded-full blur-md"></div>
+                    <!-- Glow effect disederhanakan -->
+                    <div class="absolute -inset-1 bg-teal-500/20 rounded-full blur-md"></div>
                     <img src="/U2FsdGVkX1kW8xlClExhUq6HLWRHDbHLbGGBpJV0/53616c7465645f5f7033aa75e142242ded1d8b433af4391041e38c6ff9433b37.jpeg" 
                          onerror="this.src='https://ui-avatars.com/api/?name=Michellino&background=0D8ABC&color=fff&size=128'"
                          alt="Profile Picture" 
@@ -275,7 +279,7 @@
     </footer>
 
     <script>
-        // Disable Right Click & Inspect - Ringkas
+        // Disable Interaction - Ringkas untuk menghemat memory
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === "F12" || (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C') || e.key === 'u' || e.key === 's'))) {
