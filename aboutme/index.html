@@ -11,94 +11,105 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Optimasi untuk RAM kecil & CPU Low-end (Helio A22) */
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: #0f172a; 
             color: #e2e8f0;
             scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
         }
-        
-        /* Backdrop blur sangat berat untuk GPU low-end, kita turunkan nilainya */
-        /* Menggunakan background yang lebih solid untuk mengurangi beban rendering */
         .glass {
-            background: rgba(30, 41, 59, 0.8); 
-            backdrop-filter: blur(4px); 
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
-        /* Hover yang lebih ringan untuk menghindari lag di mobile */
         .card-hover {
-            transition: transform 0.2s ease-out, background 0.2s ease-out;
-            will-change: transform; /* Akselerasi hardware */
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        @media (hover: hover) {
-            .card-hover:hover {
-                border-color: #14b8a6;
-                transform: translateY(-3px);
-                background: rgba(30, 41, 59, 0.95);
-                /* Shadow disederhanakan */
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            }
+        .card-hover:hover {
+            border-color: #14b8a6;
+            transform: translateY(-5px);
+            background: rgba(30, 41, 59, 0.7);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(20, 184, 166, 0.1);
         }
-
-        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
         .enter-label {
             font-size: 0.65rem;
             letter-spacing: 0.1em;
             opacity: 0.3;
-            transition: opacity 0.2s ease;
+            transition: all 0.3s ease;
         }
         .card-hover:hover .enter-label {
             opacity: 1;
             color: #14b8a6;
+            transform: translateX(5px);
+        }
+        .icon-box {
+            transition: transform 0.3s ease;
+        }
+        .card-hover:hover .icon-box {
+            transform: scale(1.1) rotate(5deg);
         }
 
-        /* Modal Styles - Optimasi Blur */
+        /* Modal Styles */
         #cert-modal {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(15, 23, 42, 0.96);
-            backdrop-filter: blur(6px);
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(15px);
             justify-content: center;
             align-items: center;
             padding: 1rem;
         }
-        #cert-modal.active { display: flex; }
-
+        #cert-modal.active {
+            display: flex;
+        }
         .modal-content {
             width: 100%;
             max-width: 1200px;
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 2rem;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
+            padding: 2rem;
         }
-
+        /* Menjaga aspek rasio 4:3 di modal untuk foto single atau multiple */
         .modal-image-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 550px; /* Lebar maksimal kontainer */
             aspect-ratio: 4 / 3;
             position: relative;
             overflow: hidden;
-            border-radius: 0.75rem;
+            border-radius: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        .modal-image { width: 100%; height: 100%; object-fit: cover; }
+        .modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Memastikan foto memenuhi kotak 4:3 */
+        }
         
         @media (max-width: 768px) {
-            .modal-content { gap: 1rem; }
-            .modal-image-container { max-height: 40vh; }
+            .modal-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .modal-image-container {
+                max-width: 100%;
+                max-height: 45vh;
+            }
         }
     </style>
 </head>
@@ -106,203 +117,280 @@
 
     <!-- Modal Backdrop -->
     <div id="cert-modal" onclick="closeModal()">
-        <button class="absolute top-6 right-6 text-white text-3xl hover:text-teal-400 z-[10000]">
+        <button class="absolute top-6 right-6 text-white text-3xl hover:text-teal-400 transition-colors z-[10000]">
             <i class="fas fa-times"></i>
         </button>
-        <div class="modal-content" onclick="event.stopPropagation()"></div>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <!-- Gambar akan dimasukkan di sini oleh JS -->
+        </div>
     </div>
 
-    <main class="flex-grow">
-        <div class="max-w-6xl mx-auto px-6 py-12">
+<main class="flex-grow">
+    <div class="max-w-6xl mx-auto px-6 py-16">
 
-            <!-- Header -->
-            <header class="flex flex-col items-center text-center mb-16">
-                <div class="relative">
-                    <!-- Glow effect disederhanakan -->
-                    <div class="absolute -inset-1 bg-teal-500/20 rounded-full blur-md"></div>
-                    <img src="/U2FsdGVkX1kW8xlClExhUq6HLWRHDbHLbGGBpJV0/53616c7465645f5f7033aa75e142242ded1d8b433af4391041e38c6ff9433b37.jpeg" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=Michellino&background=0D8ABC&color=fff&size=128'"
-                         alt="Profile Picture" 
-                         loading="eager"
-                         class="relative w-28 h-28 rounded-full border-2 border-slate-700 object-cover shadow-xl">
-                </div>
-                
-                <h1 class="mt-6 text-3xl font-extrabold tracking-widest text-white uppercase">
-                    Michellino Dayaqqova
-                </h1>
-                <p class="text-teal-400 font-semibold text-xs tracking-[0.3em] mt-2">SMK PGRI WLINGI</p>
-                
-                <p class="mt-6 text-slate-400 text-sm leading-relaxed max-w-md mx-auto font-light">
-                    Siswa Teknik Komputer dan Jaringan yang berfokus pada <span class="text-slate-200">software</span>, 
-                    <span class="text-slate-200">jaringan</span>, dan juga hal pada <span class="text-slate-200">teknis</span>.
-                </p>
+        <!-- Header -->
+        <header class="flex flex-col items-center text-center mb-24">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full blur opacity-25 group-hover:opacity-60 transition duration-1000"></div>
+                <img src="/U2FsdGVkX1kW8xlClExhUq6HLWRHDbHLbGGBpJV0/53616c7465645f5f7033aa75e142242ded1d8b433af4391041e38c6ff9433b37.jpeg" 
+                     onerror="this.src='https://ui-avatars.com/api/?name=Michellino&background=0D8ABC&color=fff&size=128'"
+                     alt="Profile Picture" 
+                     class="relative w-32 h-32 rounded-full border-4 border-slate-800 object-cover shadow-2xl">
+            </div>
+            
+            <h1 class="mt-8 text-4xl font-extrabold tracking-[0.2em] text-white uppercase">
+                Michellino Dayaqqova
+            </h1>
+            <p class="text-teal-400 font-semibold text-sm tracking-[0.4em] mt-3 opacity-90">SMK PGRI WLINGI</p>
+            
+            <p class="mt-8 text-slate-400 text-base leading-relaxed max-w-lg mx-auto font-light">
+                Siswa Teknik Komputer dan Jaringan yang berfokus pada <span class="text-slate-200">software</span>, 
+                <span class="text-slate-200">jaringan</span>, dan juga hal pada <span class="text-slate-200">teknis</span>.
+            </p>
 
-                <div class="flex gap-8 mt-8 text-slate-400 text-2xl">
-                    <a href="https://github.com/linnopixel" target="_blank" class="hover:text-teal-400"><i class="fab fa-github"></i></a>
-                    <a href="https://www.instagram.com/kohaboard" target="_blank" class="hover:text-pink-400"><i class="fab fa-instagram"></i></a>
-                    <a href="mailto:micheliino24@gmail.com" class="hover:text-amber-400"><i class="fas fa-envelope"></i></a>
-                    <a href="https://discord.gg/v2M536ZkW3" target="_blank" class="hover:text-indigo-400"><i class="fab fa-discord"></i></a>
-                </div>
-            </header>
+            <div class="flex gap-10 mt-10 text-slate-400 text-3xl">
+                <a href="https://github.com/linnopixel" target="_blank" class="hover:text-teal-400 transition-all hover:scale-125"><i class="fab fa-github"></i></a>
+                <a href="https://www.instagram.com/kohaboard" target="_blank" class="hover:text-pink-400 transition-all hover:scale-125"><i class="fab fa-instagram"></i></a>
+                <a href="mailto:micheliino24@gmail.com" class="hover:text-amber-400 transition-all hover:scale-125"><i class="fas fa-envelope"></i></a>
+                <a href="https://discord.gg/v2M536ZkW3" target="_blank" class="hover:text-indigo-400 transition-all hover:scale-125"><i class="fab fa-discord"></i></a>
+            </div>
+        </header>
 
-            <!-- Projects Grid -->
-            <section class="mb-20">
-                <div class="flex flex-col items-center mb-10">
-                    <h2 class="text-xs uppercase tracking-[0.4em] text-teal-500 font-bold mb-2">Notebook</h2>
-                    <div class="h-0.5 w-12 bg-teal-500 rounded-full"></div>
-                </div>
+        <!-- Projects Grid Section -->
+        <section class="mb-24">
+            <div class="flex flex-col items-center mb-12">
+                <h2 class="text-sm uppercase tracking-[0.5em] text-teal-500 font-bold mb-3">Notebook</h2>
+                <div class="h-1 w-16 bg-teal-500 rounded-full"></div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <!-- Portal Item -->
-                    <a href="https://linnopixel.github.io" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fas fa-door-open text-teal-400 text-xl"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Portal Item -->
+                <a href="https://linnopixel.github.io" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-teal-500/10 p-3 rounded-lg">
+                                <i class="fas fa-door-open text-teal-400 text-2xl"></i>
                             </div>
-                            <h3 class="text-white text-base font-bold mb-1">Portal</h3>
-                            <p class="text-slate-400 text-xs font-light">Halaman utama akses seluruh navigasi.</p>
                         </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-
-                    <!-- Networking -->
-                    <a href="https://linnopixel.github.io/aboutme/notebook#konfigurasi-dhcp" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fas fa-network-wired text-emerald-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-white text-base font-bold mb-1">Networking</h3>
-                            <p class="text-slate-400 text-xs font-light">Dasar-dasar konfigurasi jaringan & keamanan.</p>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-
-                    <!-- Web Coding -->
-                    <a href="https://linnopixel.github.io/aboutme/notebook#html-dasar" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fas fa-code text-sky-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-white text-base font-bold mb-1">Web Coding</h3>
-                            <p class="text-slate-400 text-xs font-light">Fundamental pengembangan web modern.</p>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-
-                    <!-- Linux Server -->
-                    <a href="https://linnopixel.github.io/aboutme/notebook#instalasi-dns" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fab fa-linux text-orange-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-white text-base font-bold mb-1">Linux Server</h3>
-                            <p class="text-slate-400 text-xs font-light">Panduan instalasi layanan server Debian.</p>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-
-                    <!-- Technician -->
-                    <a href="#" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fas fa-tools text-rose-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-white text-base font-bold mb-1">Technician</h3>
-                            <p class="text-slate-400 text-xs font-light">Fokus Windows & Hardware Komputer.</p>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-
-                    <!-- ESP32 IoT -->
-                    <a href="https://linnopixel.github.io/aboutme/notebook#setup-arduino-ide" class="glass py-4 px-6 rounded-xl card-hover flex flex-col justify-between min-h-[140px]">
-                        <div>
-                            <div class="mb-3">
-                                <i class="fas fa-microchip text-indigo-400 text-xl"></i>
-                            </div>
-                            <h3 class="text-white text-base font-bold mb-1">ESP32 IoT</h3>
-                            <p class="text-slate-400 text-xs font-light">Penerapan sistem IoT mikrokontroler.</p>
-                        </div>
-                        <div class="flex justify-end mt-2">
-                            <span class="enter-label font-bold text-[9px]">AKSES ➔</span>
-                        </div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Sertifikasi -->
-            <section class="mb-20 flex flex-col items-center">
-                <div class="flex flex-col items-center mb-10">
-                    <h2 class="text-xs uppercase tracking-[0.4em] text-teal-500 font-bold mb-2">Sertifikasi</h2>
-                    <div class="h-0.5 w-12 bg-teal-500 rounded-full"></div>
-                </div>
-
-                <div class="flex flex-wrap gap-6 justify-center w-full max-w-5xl">
-                    <!-- Sertifikat 1 -->
-                    <div class="w-full sm:w-64" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/60a3d6c0c308d315f29a85afb8d22518939077ecc3212f40c1b75f020ea73f5b.jpeg'])">
-                        <div class="relative aspect-[4/3] overflow-hidden rounded-xl border border-slate-800 cursor-pointer">
-                            <img src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg" loading="lazy" class="w-full h-full object-cover">
-                        </div>
-                        <div class="text-center mt-3">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest">Linux Admin</p>
-                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Portal</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Halaman utama akses seluruh navigasi.
+                        </p>
                     </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
 
-                    <!-- Sertifikat 2 -->
-                    <div class="w-full sm:w-64" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/f554d80271d0758015da623a1b9ae9b13c108a361e7e29ae9b7b63e585f51965789745fbbcfaeb5554ebdf4a18babf295d1a426863e4f4a69d13dac8c49ba247.jpeg'])">
-                        <div class="relative aspect-[4/3] overflow-hidden rounded-xl border border-slate-800 cursor-pointer">
-                            <img src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg" loading="lazy" class="w-full h-full object-cover">
+                <!-- Networking -->
+                <a href="https://linnopixel.github.io/aboutme/notebook#konfigurasi-dhcp" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-emerald-500/10 p-3 rounded-lg">
+                                <i class="fas fa-network-wired text-emerald-400 text-2xl"></i>
+                            </div>
                         </div>
-                        <div class="text-center mt-3">
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest">Junior Technician</p>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Networking</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Dasar-dasar konfigurasi jaringan & keamanan.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+
+                <!-- Web Coding -->
+                <a href="https://linnopixel.github.io/aboutme/notebook#html-dasar" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-sky-500/10 p-3 rounded-lg">
+                                <i class="fas fa-code text-sky-400 text-2xl"></i>
+                            </div>
                         </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Web Coding</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Fundamental pengembangan web modern.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+
+                <!-- Linux Server -->
+                <a href="https://linnopixel.github.io/aboutme/notebook#instalasi-dns" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-orange-500/10 p-3 rounded-lg">
+                                <i class="fab fa-linux text-orange-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Linux Server</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Panduan instalasi layanan server Debian.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+
+                <!-- Technician -->
+                <a href="#" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-rose-500/10 p-3 rounded-lg">
+                                <i class="fas fa-tools text-rose-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Technician</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Fokus pada OS Windows, perbaikan Hardware Komputer dan Laptop.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+
+                <!-- ESP32 IoT -->
+                <a href="https://linnopixel.github.io/aboutme/notebook#setup-arduino-ide" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-indigo-500/10 p-3 rounded-lg">
+                                <i class="fas fa-microchip text-indigo-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">ESP32 IoT</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Penerapan sistem IoT berbasis mikrokontroler.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+
+        <!-- Sertifikasi Section -->
+        <section class="mb-24 flex flex-col items-center">
+            <div class="flex flex-col items-center mb-12">
+                <h2 class="text-sm uppercase tracking-[0.5em] text-teal-500 font-bold mb-3">Sertifikasi</h2>
+                <div class="h-1 w-16 bg-teal-500 rounded-full"></div>
+            </div>
+
+            <!-- Menggunakan flex justify-center untuk menengahkan daftar sertifikat -->
+            <div class="flex flex-wrap gap-8 justify-center w-full max-w-5xl">
+                
+                <!-- Sertifikat 1 -->
+                <div class="w-full sm:w-72 group" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/60a3d6c0c308d315f29a85afb8d22518939077ecc3212f40c1b75f020ea73f5b.jpeg'])">
+                    <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 cursor-pointer shadow-lg">
+                        <div class="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                            <i class="fas fa-expand text-white text-3xl"></i>
+                        </div>
+                        <img src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    </div>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest font-medium">Pelatihan Administrasi Linux</p>
+                        <p class="text-[10px] text-teal-500 mt-1 font-bold tracking-widest uppercase">Linux Admin</p>
                     </div>
                 </div>
-            </section>
 
-        </div>
-    </main>
+                <!-- Sertifikat 2 -->
+                <div class="w-full sm:w-72 group" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/f554d80271d0758015da623a1b9ae9b13c108a361e7e29ae9b7b63e585f51965789745fbbcfaeb5554ebdf4a18babf295d1a426863e4f4a69d13dac8c49ba247.jpeg'])">
+                    <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 cursor-pointer shadow-lg">
+                        <div class="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                            <i class="fas fa-expand text-white text-3xl"></i>
+                        </div>
+                        <img src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    </div>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest font-medium">Praktik Kerja Lapangan</p>
+                        <p class="text-[10px] text-teal-500 mt-1 font-bold tracking-widest uppercase">Junior Technician</p>
+                    </div>
+                </div>
 
-    <footer class="py-8 border-t border-slate-800/50 text-center">
-        <p class="text-[9px] tracking-[0.2em] text-slate-600 uppercase">
-            &copy; 2025 • Michellino Dayaqqova
-        </p>
-    </footer>
+                <!-- Sertifikat 3 -->
+<!--                 <div class="w-full sm:w-72 group" onclick="openCertModal(['https://placehold.co/1200x900/1e293b/94a3b8?text=Paskibra+Award'])">
+                    <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 cursor-pointer shadow-lg">
+                        <div class="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                            <i class="fas fa-expand text-white text-3xl"></i>
+                        </div>
+                        <img src="https://placehold.co/600x450/1e293b/94a3b8?text=Paskibra+Award" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    </div>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest font-medium">Paskibra Achievement</p>
+                        <p class="text-[10px] text-teal-500 mt-1 font-bold tracking-widest uppercase">Character Building</p>
+                    </div>
+                </div>
+
+            </div>
+        </section> -->
+
+    </div>
+</main>
+
+<footer class="py-10 border-t border-slate-800/50 text-center">
+    <p class="text-[10px] tracking-[0.3em] text-slate-600 uppercase">
+        &copy; 2025 • Michellino Dayaqqova
+    </p>
+</footer>
 
     <script>
-        // Disable Interaction - Ringkas untuk menghemat memory
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === "F12" || (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C') || e.key === 'u' || e.key === 's'))) {
-                e.preventDefault();
-            }
-        });
-        document.addEventListener('dragstart', e => { if (e.target.nodeName === 'IMG') e.preventDefault(); });
-        document.addEventListener('selectstart', e => e.preventDefault());
+
+        // 1. Menonaktifkan Klik Kanan (Konteks Menu) secara diam-diam
+document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
+
+// 2. Menonaktifkan Shortcut Keyboard (F12, Ctrl+U, Inspect Element, dll)
+document.addEventListener('keydown', (e) => {
+    // F12
+    if (e.key === "F12") {
+        e.preventDefault();
+        return false;
+    }
+    // Ctrl+Shift+I, J, C (DevTools) dan Ctrl+U (Source), Ctrl+S (Save)
+    if (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C') || e.key === 'u' || e.key === 's')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// 3. Mencegah Drag and Drop Gambar ke Tab Baru
+document.addEventListener('dragstart', (e) => {
+    if (e.target.nodeName === 'IMG') {
+        e.preventDefault();
+    }
+});
+
+// 4. Mencegah Seleksi Teks (Agar konten tidak bisa di-copy)
+document.addEventListener('selectstart', (e) => {
+    e.preventDefault();
+});
 
         const modal = document.getElementById('cert-modal');
         const modalContent = modal.querySelector('.modal-content');
 
         function openCertModal(imageUrls) {
             modalContent.innerHTML = '';
+            
             imageUrls.forEach(url => {
+                // Buat kontainer pembungkus untuk menjaga rasio 4:3
                 const container = document.createElement('div');
                 container.className = 'modal-image-container';
+
                 const img = document.createElement('img');
                 img.src = url;
                 img.className = 'modal-image';
+                
                 container.appendChild(img);
                 modalContent.appendChild(container);
             });
+
             modal.classList.add('active');
             document.body.style.overflow = 'hidden'; 
         }
@@ -312,7 +400,10 @@
             document.body.style.overflow = ''; 
         }
 
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
+
 </body>
 </html>
