@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Notebook minimalis untuk Web Coding, Linux, dan ESP32">
+    <title>iNotes</title>
+    
+    <!-- Google Fonts: Poppins & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --surface-color: #161b22;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-color: #58a6ff;
+            --accent-hover: #1f6feb;
+            --code-bg: #010409;
+            --success: #3fb950;
+            --danger: #f85149;
+            --terminal-header: #21262d;
+            --sidebar-width: 280px;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-primary); 
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-weight: 400;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav { padding: 15px; flex-grow: 1; overflow-y: auto; }
+        
+        .nav-group-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin: 15px 0 8px 10px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+        .nav-item.active {
+            background-color: rgba(88, 166, 255, 0.15);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        main {
+            flex-grow: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .top-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container { 
+            max-width: 850px; 
+            margin: 0 auto; 
+            padding: 40px 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; letter-spacing: -1px; }
+        .page-desc { color: var(--text-secondary); margin-bottom: 40px; font-size: 1rem; }
+        h2 { margin-top: 40px; margin-bottom: 15px; font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        
+        /* Code & Terminal Container */
+        .code-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        code { 
+            font-family: 'JetBrains Mono', monospace; 
+            color: #e6edf3; 
+            font-size: 0.85rem; 
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .code-container:hover .copy-btn { opacity: 1; }
+
+        /* Terminal Output Simulation */
+        .terminal-output {
+            background: #000;
+            border-radius: 0 0 12px 12px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #d1d1d1;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+        }
+
+        .terminal-header {
+            background: var(--terminal-header);
+            padding: 8px 15px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Preview Window */
+        .preview-wrapper {
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        
+        .preview-header {
+            background: #f6f8fa;
+            padding: 8px 15px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #57606a;
+            border-bottom: 1px solid #d0d7de;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid #d0d7de;
+            border-bottom: none;
+            margin-bottom: -9px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 200px;
+            border: none;
+            background: white;
+        }
+
+        /* Explanation List */
+        .explanation-list {
+            margin-top: 20px;
+            list-style: none;
+        }
+        .explanation-list li {
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 3px solid var(--accent-color);
+            font-size: 0.95rem;
+        }
+        .explanation-list b { color: var(--accent-color); font-weight: 600; }
+
+        .repo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .badge-12 { background: #d70a53; color: white; }
+        .badge-11 { background: #003366; color: white; }
+
+        @media (max-width: 850px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; }
+            .sidebar-header { padding: 15px; }
+            nav { display: flex; overflow-x: auto; padding: 10px; gap: 5px; }
+            .nav-item { white-space: nowrap; margin-bottom: 0; }
+            .nav-group-label, .top-bar { display: none; }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="sidebar-header">
+            <i data-lucide="terminal"></i> iNotes
+        </div>
+        <nav id="sidebar-nav">
+            <div class="nav-group-label">Knowledge Base</div>
+            <div class="nav-item active" onclick="showPage('coding')" data-page="coding">
+                <i data-lucide="code-2"></i> Web Coding
+            </div>
+            <div class="nav-item" onclick="showPage('linux')" data-page="linux">
+                <i data-lucide="cpu"></i> Linux System
+            </div>
+            <div class="nav-item" onclick="showPage('esp32')" data-page="esp32">
+                <i data-lucide="circuit-board"></i> ESP32 IoT
+            </div>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="top-bar">
+            <div id="breadcrumb" style="font-size: 0.8rem; font-weight: 500; color: var(--text-secondary)">DEVNOTES / WEB CODING</div>
+            <div id="status-msg" style="font-size: 0.8rem; font-weight: 600; color: var(--success); opacity: 0">TERSALIN!</div>
+        </div>
+        <div class="container" id="content-area">
+            <!-- Dinamis -->
+        </div>
+    </main>
+
+    <script>
+        const pages = {
+            coding: {
+                title: "Web Coding",
+                desc: "Struktur dokumen HTML5 asli dan penjelasannya.",
+                content: `
+                    <h2><i data-lucide="file-code"></i> Struktur Lengkap HTML</h2>
+                    <p>Perhatikan tag <code>&lt;title&gt;</code> di bawah ini. Tag ini menentukan teks yang muncul di tab browser Anda.</p>
+                    
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                        <pre><code id="html-snippet">&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;title&gt;Halaman Keren Saya&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Halo Dunia!&lt;/h1&gt;
+    &lt;p&gt;Ini adalah konten body.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                    </div>
+
+                    <p><strong>Hasil Pratinjau Browser:</strong></p>
+                    <div class="preview-wrapper">
+                        <div class="preview-header">
+                            <div class="preview-tab">
+                                <i data-lucide="globe" style="width:12px;height:12px"></i>
+                                <span id="tab-title-display">Memuat...</span>
+                            </div>
+                            <span style="margin-right:10px; color:#8c959f">https://belajar-html.com</span>
+                        </div>
+                        <iframe id="live-preview" class="preview-frame"></iframe>
+                    </div>
+
+                    <h2 style="margin-top: 40px;"><i data-lucide="info"></i> Penjelasan Komponen</h2>
+                    <ul class="explanation-list">
+                        <li><b>&lt;title&gt;</b>: Memberikan nama pada tab browser. Sangat penting untuk SEO dan navigasi pengguna.</li>
+                        <li><b>&lt;head&gt;</b>: Wadah untuk metadata (data tentang data) yang tidak muncul langsung di badan halaman.</li>
+                        <li><b>&lt;body&gt;</b>: Tempat semua elemen yang ingin Anda tampilkan kepada pengunjung situs.</li>
+                    </ul>
+                `
+            },
+            linux: {
+                title: "Linux System",
+                desc: "Dasar-dasar Linux dan Konfigurasi Debian",
+                content: `
+                    <h2><i data-lucide="database"></i> Mengelola Repositori Debian</h2>
+                    <p>Konfigurasi repositori dilakukan pada file <code>/etc/apt/sources.list</code>. Pastikan Anda memilih daftar repo yang sesuai dengan versi OS Anda.</p>
+                    
+                    <h3>1. Membuka Editor</h3>
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                        <pre><code>sudo nano /etc/apt/sources.list</code></pre>
+                    </div>
+
+                    <h3>2. Daftar Repositori Berdasarkan Versi</h3>
+                    
+                    <div style="margin-top:25px">
+                        <span class="repo-badge badge-12">Untuk Debian 12 (Bookworm)</span>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                            <pre><code>deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware</code></pre>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px">Catatan: Debian 12 memperkenalkan komponen <i>non-free-firmware</i> untuk driver hardware.</p>
+                    </div>
+
+                    <div style="margin-top:25px">
+                        <span class="repo-badge badge-11">Untuk Debian 11 (Bullseye)</span>
+                        <div class="code-container">
+                            <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                            <pre><code>deb http://deb.debian.org/debian/ bullseye main contrib non-free
+deb http://deb.debian.org/debian/ bullseye-updates main contrib non-free
+deb http://security.debian.org/debian-security bullseye-security main contrib non-free</code></pre>
+                        </div>
+                    </div>
+
+                    <h3>3. Menerapkan Perubahan</h3>
+                    <p>Setelah menyimpan file (Ctrl+O, Enter, Ctrl+X), segarkan database paket.</p>
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                        <pre><code>sudo apt update</code></pre>
+                    </div>
+
+                    <h2><i data-lucide="activity"></i> Monitoring Sistem</h2>
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                        <pre><code>top</code></pre>
+                    </div>
+                    <div class="terminal-header"><i data-lucide="terminal" style="width:12px"></i> Output Simulasi</div>
+                    <div class="terminal-output">
+top - 12:45:01 up 2 days,  3:14,  1 user,  load average: 0.12, 0.08, 0.05
+Tasks: 120 total,   1 running, 119 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  2.5 us,  1.1 sy,  0.0 ni, 96.4 id,  0.0 wa,  0.0 hi,  0.0 si</div>
+
+                    <h2 style="margin-top: 40px;"><i data-lucide="info"></i> Istilah Penting</h2>
+                    <ul class="explanation-list">
+                        <li><b>Bookworm</b>: Nama sandi (codename) resmi untuk Debian 12.</li>
+                        <li><b>Bullseye</b>: Nama sandi (codename) resmi untuk Debian 11.</li>
+                        <li><b>Main</b>: Software bebas yang didukung penuh oleh Debian.</li>
+                        <li><b>Non-free-firmware</b>: Kategori baru di Debian 12 untuk memudahkan instalasi driver WiFi/GPU.</li>
+                    </ul>
+                `
+            },
+            esp32: {
+                title: "ESP32 IoT",
+                desc: "Snippet pemrograman mikrokontroler C++.",
+                content: `
+                    <h2><i data-lucide="wifi"></i> WiFi Auto-Connect</h2>
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
+                        <pre><code>#include &lt;WiFi.h&gt;
+
+const char* ssid = "NAMA_WIFI";
+const char* pass = "PASSWORD";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, pass);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("Terhubung!");
+}</code></pre>
+                    </div>
+                `
+            }
+        };
+
+        function updateLivePreview() {
+            setTimeout(() => {
+                const iframe = document.getElementById('live-preview');
+                const snippet = document.getElementById('html-snippet');
+                const tabTitleDisplay = document.getElementById('tab-title-display');
+                
+                if (iframe && snippet) {
+                    try {
+                        const code = snippet.textContent;
+                        const doc = iframe.contentWindow.document;
+                        doc.open();
+                        doc.write(code);
+                        doc.close();
+
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = code;
+                        const extractedTitle = tempDiv.querySelector('title')?.innerText || 'Document';
+                        if(tabTitleDisplay) tabTitleDisplay.innerText = extractedTitle;
+                        
+                    } catch (e) {
+                        console.error("Gagal memuat pratinjau:", e);
+                    }
+                }
+            }, 100);
+        }
+
+        function showPage(pageKey) {
+            const page = pages[pageKey];
+            if (!page) return;
+
+            const contentArea = document.getElementById('content-area');
+            const breadcrumb = document.getElementById('breadcrumb');
+            
+            contentArea.innerHTML = `
+                <h1>${page.title}</h1>
+                <p class="page-desc">${page.desc}</p>
+                <div class="page-body">
+                    ${page.content}
+                </div>
+            `;
+
+            breadcrumb.innerText = `DEVNOTES / ${page.title.toUpperCase()}`;
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const clickAttr = item.getAttribute('onclick');
+                if (clickAttr && clickAttr.includes(pageKey)) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            lucide.createIcons();
+            if (pageKey === 'coding') updateLivePreview();
+            document.querySelector('main').scrollTop = 0;
+        }
+
+        function copyCode(btn) {
+            const code = btn.nextElementSibling.innerText;
+            const status = document.getElementById('status-msg');
+            const textArea = document.createElement("textarea");
+            textArea.value = code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            btn.innerText = "TERSALIN!";
+            status.style.opacity = "1";
+            setTimeout(() => {
+                btn.innerText = "Salin";
+                status.style.opacity = "0";
+            }, 2000);
+        }
+
+        window.onload = () => {
+            showPage('coding');
+        };
+    </script>
+</body>
+</html>
