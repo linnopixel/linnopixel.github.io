@@ -1,524 +1,342 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Notebook minimalis untuk Web Coding, Linux, dan ESP32">
-    <title>iNotes</title>
-    
-    <!-- Google Fonts: Poppins & JetBrains Mono -->
+    <title>Michellino | Portfolio</title>
+    <link rel="icon" type="image/png" href="https://linnopixel.github.io/gallery/icon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --surface-color: #161b22;
-            --border-color: #30363d;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --accent-color: #58a6ff;
-            --accent-hover: #1f6feb;
-            --code-bg: #010409;
-            --success: #3fb950;
-            --danger: #f85149;
-            --terminal-header: #21262d;
-            --sidebar-width: 280px;
-        }
-
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Poppins', sans-serif; 
-        }
-        
         body { 
-            background-color: var(--bg-color); 
-            color: var(--text-primary); 
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            font-weight: 400;
-        }
-
-        /* Sidebar Styling */
-        aside {
-            width: var(--sidebar-width);
-            background-color: var(--surface-color);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            padding: 24px 20px;
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--accent-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        nav { padding: 15px; flex-grow: 1; overflow-y: auto; }
-        
-        .nav-group-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin: 15px 0 8px 10px;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            color: var(--text-primary);
-            text-decoration: none;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
-        .nav-item.active {
-            background-color: rgba(88, 166, 255, 0.15);
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-
-        /* Content Area */
-        main {
-            flex-grow: 1;
-            overflow-y: auto;
+            font-family: 'Poppins', sans-serif; 
+            background-color: #0f172a; 
+            color: #e2e8f0;
             scroll-behavior: smooth;
-            position: relative;
+        }
+        /* Glassmorphism TANPA backdrop-filter (penyebab utama lag di Helio A22 + 1 GB RAM) */
+        .glass {
+            background: rgba(30, 41, 59, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        /* Hover ringan, hanya ubah opacity + translateY kecil, tanpa shadow berat */
+        .card-hover {
+            transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        }
+        .card-hover:hover {
+            border-color: #14b8a6;
+            transform: translateY(-4px);
+            background: rgba(30, 41, 59, 0.85);
+        }
+        .enter-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover .enter-label {
+            opacity: 1;
+            color: #14b8a6;
+            transform: translateX(4px);
+        }
+        .icon-box {
+            transition: transform 0.25s ease;
+        }
+        .card-hover:hover .icon-box {
+            transform: scale(1.08);
         }
 
-        .top-bar {
-            position: sticky;
-            top: 0;
-            background: rgba(13, 17, 23, 0.8);
-            backdrop-filter: blur(12px);
-            padding: 15px 30px;
-            border-bottom: 1px solid var(--border-color);
-            z-index: 50;
-            display: flex;
-            justify-content: space-between;
+        /* Modal tanpa backdrop-filter blur */
+        #cert-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.96);
+            justify-content: center;
             align-items: center;
+            padding: 1rem;
         }
-
-        .container { 
-            max-width: 850px; 
-            margin: 0 auto; 
-            padding: 40px 20px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h1 { font-size: 2.2rem; margin-bottom: 10px; font-weight: 700; letter-spacing: -1px; }
-        .page-desc { color: var(--text-secondary); margin-bottom: 40px; font-size: 1rem; }
-        h2 { margin-top: 40px; margin-bottom: 15px; font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-        
-        /* Code & Terminal Container */
-        .code-container {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        pre {
-            background: var(--code-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            overflow-x: auto;
-            line-height: 1.6;
-        }
-
-        code { 
-            font-family: 'JetBrains Mono', monospace; 
-            color: #e6edf3; 
-            font-size: 0.85rem; 
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .code-container:hover .copy-btn { opacity: 1; }
-
-        /* Terminal Output Simulation */
-        .terminal-output {
-            background: #000;
-            border-radius: 0 0 12px 12px;
-            padding: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: #d1d1d1;
-            border: 1px solid var(--border-color);
-            border-top: none;
-            margin-bottom: 25px;
-            white-space: pre-wrap;
-        }
-
-        .terminal-header {
-            background: var(--terminal-header);
-            padding: 8px 15px;
-            border-radius: 12px 12px 0 0;
-            border: 1px solid var(--border-color);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        #cert-modal.active {
             display: flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        /* Preview Window */
-        .preview-wrapper {
-            margin-top: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            background: #ffffff;
-        }
-        
-        .preview-header {
-            background: #f6f8fa;
-            padding: 8px 15px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #57606a;
-            border-bottom: 1px solid #d0d7de;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .preview-tab {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: white;
-            padding: 4px 12px;
-            border-radius: 6px 6px 0 0;
-            border: 1px solid #d0d7de;
-            border-bottom: none;
-            margin-bottom: -9px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .preview-frame {
+        .modal-content {
             width: 100%;
-            height: 200px;
-            border: none;
-            background: white;
+            max-width: 1200px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
         }
-
-        /* Explanation List */
-        .explanation-list {
-            margin-top: 20px;
-            list-style: none;
+        .modal-image-container {
+            width: 100%;
+            max-width: 560px;
+            aspect-ratio: 4 / 3;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4);
         }
-        .explanation-list li {
-            margin-bottom: 15px;
-            padding-left: 15px;
-            border-left: 3px solid var(--accent-color);
-            font-size: 0.95rem;
+        .modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .explanation-list b { color: var(--accent-color); font-weight: 600; }
-
-        .repo-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .badge-12 { background: #d70a53; color: white; }
-        .badge-11 { background: #003366; color: white; }
-
-        @media (max-width: 850px) {
-            body { flex-direction: column; }
-            aside { width: 100%; height: auto; }
-            .sidebar-header { padding: 15px; }
-            nav { display: flex; overflow-x: auto; padding: 10px; gap: 5px; }
-            .nav-item { white-space: nowrap; margin-bottom: 0; }
-            .nav-group-label, .top-bar { display: none; }
-            .container { padding: 20px; }
+        
+        @media (max-width: 768px) {
+            .modal-content { gap: 1rem; }
+            .modal-image-container { max-width: 100%; max-height: 48vh; }
         }
     </style>
 </head>
-<body>
+<body class="antialiased min-h-screen flex flex-col">
 
-    <aside>
-        <div class="sidebar-header">
-            <i data-lucide="terminal"></i> iNotes
-        </div>
-        <nav id="sidebar-nav">
-            <div class="nav-group-label">Knowledge Base</div>
-            <div class="nav-item active" onclick="showPage('coding')" data-page="coding">
-                <i data-lucide="code-2"></i> Web Coding
+    <!-- Modal -->
+    <div id="cert-modal" onclick="closeModal()">
+        <button class="absolute top-6 right-6 text-white text-3xl hover:text-teal-400 transition-colors z-[10000]">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-content" onclick="event.stopPropagation()"></div>
+    </div>
+
+<main class="flex-grow">
+    <div class="max-w-6xl mx-auto px-6 py-16">
+
+        <!-- Header -->
+        <header class="flex flex-col items-center text-center mb-24">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full blur opacity-25 group-hover:opacity-60 transition duration-1000"></div>
+                <img src="/U2FsdGVkX1kW8xlClExhUq6HLWRHDbHLbGGBpJV0/53616c7465645f5f7033aa75e142242ded1d8b433af4391041e38c6ff9433b37.jpeg" 
+                     onerror="this.src='https://ui-avatars.com/api/?name=Michellino&background=0D8ABC&color=fff&size=128'"
+                     alt="Profile Picture" 
+                     class="relative w-32 h-32 rounded-full border-4 border-slate-800 object-cover shadow-2xl">
             </div>
-            <div class="nav-item" onclick="showPage('linux')" data-page="linux">
-                <i data-lucide="cpu"></i> Linux System
+            
+            <h1 class="mt-8 text-4xl font-extrabold tracking-[0.2em] text-white uppercase">
+                Michellino Dayaqqova
+            </h1>
+            <p class="text-teal-400 font-semibold text-sm tracking-[0.4em] mt-3 opacity-90">SMK PGRI WLINGI</p>
+            
+            <p class="mt-8 text-slate-400 text-base leading-relaxed max-w-lg mx-auto font-light">
+                Siswa Teknik Komputer dan Jaringan yang berfokus pada <span class="text-slate-200">software</span>, 
+                <span class="text-slate-200">jaringan</span>, dan juga hal pada <span class="text-slate-200">teknis</span>.
+            </p>
+
+            <div class="flex gap-10 mt-10 text-slate-400 text-3xl">
+                <a href="https://github.com/linnopixel" target="_blank" class="hover:text-teal-400 transition-all hover:scale-125"><i class="fab fa-github"></i></a>
+                <a href="https://www.instagram.com/kohaboard" target="_blank" class="hover:text-pink-400 transition-all hover:scale-125"><i class="fab fa-instagram"></i></a>
+                <a href="mailto:micheliino24@gmail.com" class="hover:text-amber-400 transition-all hover:scale-125"><i class="fas fa-envelope"></i></a>
+                <a href="https://discord.gg/v2M536ZkW3" target="_blank" class="hover:text-indigo-400 transition-all hover:scale-125"><i class="fab fa-discord"></i></a>
             </div>
-            <div class="nav-item" onclick="showPage('esp32')" data-page="esp32">
-                <i data-lucide="circuit-board"></i> ESP32 IoT
+        </header>
+
+        <!-- Projects Grid Section -->
+        <section class="mb-24">
+            <div class="flex flex-col items-center mb-12">
+                <h2 class="text-sm uppercase tracking-[0.5em] text-teal-500 font-bold mb-3">Notebook</h2>
+                <div class="h-1 w-16 bg-teal-500 rounded-full"></div>
             </div>
-        </nav>
-    </aside>
 
-    <main>
-        <div class="top-bar">
-            <div id="breadcrumb" style="font-size: 0.8rem; font-weight: 500; color: var(--text-secondary)">DEVNOTES / WEB CODING</div>
-            <div id="status-msg" style="font-size: 0.8rem; font-weight: 600; color: var(--success); opacity: 0">TERSALIN!</div>
-        </div>
-        <div class="container" id="content-area">
-            <!-- Dinamis -->
-        </div>
-    </main>
-
-    <script>
-        const pages = {
-            coding: {
-                title: "Web Coding",
-                desc: "Struktur dokumen HTML5 asli dan penjelasannya.",
-                content: `
-                    <h2><i data-lucide="file-code"></i> Struktur Lengkap HTML</h2>
-                    <p>Perhatikan tag <code>&lt;title&gt;</code> di bawah ini. Tag ini menentukan teks yang muncul di tab browser Anda.</p>
-                    
-                    <div class="code-container">
-                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                        <pre><code id="html-snippet">&lt;!DOCTYPE html&gt;
-&lt;html lang="id"&gt;
-&lt;head&gt;
-    &lt;title&gt;Halaman Keren Saya&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Halo Dunia!&lt;/h1&gt;
-    &lt;p&gt;Ini adalah konten body.&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                    </div>
-
-                    <p><strong>Hasil Pratinjau Browser:</strong></p>
-                    <div class="preview-wrapper">
-                        <div class="preview-header">
-                            <div class="preview-tab">
-                                <i data-lucide="globe" style="width:12px;height:12px"></i>
-                                <span id="tab-title-display">Memuat...</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Semua card sama, hanya contoh satu untuk ringkas -->
+                <a href="https://linnopixel.github.io" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-teal-500/10 p-3 rounded-lg">
+                                <i class="fas fa-door-open text-teal-400 text-2xl"></i>
                             </div>
-                            <span style="margin-right:10px; color:#8c959f">https://belajar-html.com</span>
                         </div>
-                        <iframe id="live-preview" class="preview-frame"></iframe>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Portal</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Halaman utama akses seluruh navigasi.
+                        </p>
                     </div>
-
-                    <h2 style="margin-top: 40px;"><i data-lucide="info"></i> Penjelasan Komponen</h2>
-                    <ul class="explanation-list">
-                        <li><b>&lt;title&gt;</b>: Memberikan nama pada tab browser. Sangat penting untuk SEO dan navigasi pengguna.</li>
-                        <li><b>&lt;head&gt;</b>: Wadah untuk metadata (data tentang data) yang tidak muncul langsung di badan halaman.</li>
-                        <li><b>&lt;body&gt;</b>: Tempat semua elemen yang ingin Anda tampilkan kepada pengunjung situs.</li>
-                    </ul>
-                `
-            },
-            linux: {
-                title: "Linux System",
-                desc: "Dasar-dasar Linux dan Konfigurasi Debian",
-                content: `
-                    <h2><i data-lucide="database"></i> Mengelola Repositori Debian</h2>
-                    <p>Konfigurasi repositori dilakukan pada file <code>/etc/apt/sources.list</code>. Pastikan Anda memilih daftar repo yang sesuai dengan versi OS Anda.</p>
-                    
-                    <h3>1. Membuka Editor</h3>
-                    <div class="code-container">
-                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                        <pre><code>sudo nano /etc/apt/sources.list</code></pre>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
                     </div>
+                </a>
 
-                    <h3>2. Daftar Repositori Berdasarkan Versi</h3>
-                    
-                    <div style="margin-top:25px">
-                        <span class="repo-badge badge-12">Untuk Debian 12 (Bookworm)</span>
-                        <div class="code-container">
-                            <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                            <pre><code>deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
-deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
-deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware</code></pre>
+                <!-- Card lainnya tetap sama seperti kode asli -->
+                <a href="https://linnopixel.github.io/aboutme/notebook#konfigurasi-dhcp" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-emerald-500/10 p-3 rounded-lg">
+                                <i class="fas fa-network-wired text-emerald-400 text-2xl"></i>
+                            </div>
                         </div>
-                        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px">Catatan: Debian 12 memperkenalkan komponen <i>non-free-firmware</i> untuk driver hardware.</p>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Networking</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Dasar-dasar konfigurasi jaringan & keamanan.
+                        </p>
                     </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
 
-                    <div style="margin-top:25px">
-                        <span class="repo-badge badge-11">Untuk Debian 11 (Bullseye)</span>
-                        <div class="code-container">
-                            <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                            <pre><code>deb http://deb.debian.org/debian/ bullseye main contrib non-free
-deb http://deb.debian.org/debian/ bullseye-updates main contrib non-free
-deb http://security.debian.org/debian-security bullseye-security main contrib non-free</code></pre>
+                <a href="/notes" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-sky-500/10 p-3 rounded-lg">
+                                <i class="fas fa-code text-sky-400 text-2xl"></i>
+                            </div>
                         </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Web Coding</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Dasar pengembangan web modern.
+                        </p>
                     </div>
-
-                    <h3>3. Menerapkan Perubahan</h3>
-                    <p>Setelah menyimpan file (Ctrl+O, Enter, Ctrl+X), segarkan database paket.</p>
-                    <div class="code-container">
-                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                        <pre><code>sudo apt update</code></pre>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
                     </div>
+                </a>
 
-                    <h2><i data-lucide="activity"></i> Monitoring Sistem</h2>
-                    <div class="code-container">
-                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                        <pre><code>top</code></pre>
+                <a href="/notes" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-orange-500/10 p-3 rounded-lg">
+                                <i class="fab fa-linux text-orange-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Linux Server</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Panduan dasar Debian.
+                        </p>
                     </div>
-                    <div class="terminal-header"><i data-lucide="terminal" style="width:12px"></i> Output Simulasi</div>
-                    <div class="terminal-output">
-top - 12:45:01 up 2 days,  3:14,  1 user,  load average: 0.12, 0.08, 0.05
-Tasks: 120 total,   1 running, 119 sleeping,   0 stopped,   0 zombie
-%Cpu(s):  2.5 us,  1.1 sy,  0.0 ni, 96.4 id,  0.0 wa,  0.0 hi,  0.0 si</div>
-
-                    <h2 style="margin-top: 40px;"><i data-lucide="info"></i> Istilah Penting</h2>
-                    <ul class="explanation-list">
-                        <li><b>Bookworm</b>: Nama sandi (codename) resmi untuk Debian 12.</li>
-                        <li><b>Bullseye</b>: Nama sandi (codename) resmi untuk Debian 11.</li>
-                        <li><b>Main</b>: Software bebas yang didukung penuh oleh Debian.</li>
-                        <li><b>Non-free-firmware</b>: Kategori baru di Debian 12 untuk memudahkan instalasi driver WiFi/GPU.</li>
-                    </ul>
-                `
-            },
-            esp32: {
-                title: "ESP32 IoT",
-                desc: "Snippet pemrograman mikrokontroler C++.",
-                content: `
-                    <h2><i data-lucide="wifi"></i> WiFi Auto-Connect</h2>
-                    <div class="code-container">
-                        <button class="copy-btn" onclick="copyCode(this)">Salin</button>
-                        <pre><code>#include &lt;WiFi.h&gt;
-
-const char* ssid = "NAMA_WIFI";
-const char* pass = "PASSWORD";
-
-void setup() {
-  Serial.begin(115200);
-  WiFi.begin(ssid, pass);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("Terhubung!");
-}</code></pre>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
                     </div>
-                `
-            }
-        };
+                </a>
 
-        function updateLivePreview() {
-            setTimeout(() => {
-                const iframe = document.getElementById('live-preview');
-                const snippet = document.getElementById('html-snippet');
-                const tabTitleDisplay = document.getElementById('tab-title-display');
+                <a href="#" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-rose-500/10 p-3 rounded-lg">
+                                <i class="fas fa-tools text-rose-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">Technician</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Fokus pada OS Windows, perbaikan Hardware Komputer dan Laptop.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+
+                <a href="/notes" class="glass py-4 px-8 rounded-2xl card-hover flex flex-col justify-between min-h-[160px]">
+                    <div>
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="icon-box bg-indigo-500/10 p-3 rounded-lg">
+                                <i class="fas fa-microchip text-indigo-400 text-2xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-wide mb-1">ESP32 IoT</h3>
+                        <p class="text-slate-400 text-sm font-light leading-relaxed">
+                            Penerapan sistem IoT berbasis mikrokontroler.
+                        </p>
+                    </div>
+                    <div class="flex justify-end items-center mt-2">
+                        <span class="enter-label uppercase font-bold">Akses ➔</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Sertifikasi Section -->
+        <section class="mb-24 flex flex-col items-center">
+            <div class="flex flex-col items-center mb-12">
+                <h2 class="text-sm uppercase tracking-[0.5em] text-teal-500 font-bold mb-3">Sertifikasi</h2>
+                <div class="h-1 w-16 bg-teal-500 rounded-full"></div>
+            </div>
+
+            <div class="flex flex-wrap gap-8 justify-center w-full max-w-5xl">
                 
-                if (iframe && snippet) {
-                    try {
-                        const code = snippet.textContent;
-                        const doc = iframe.contentWindow.document;
-                        doc.open();
-                        doc.write(code);
-                        doc.close();
-
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = code;
-                        const extractedTitle = tempDiv.querySelector('title')?.innerText || 'Document';
-                        if(tabTitleDisplay) tabTitleDisplay.innerText = extractedTitle;
-                        
-                    } catch (e) {
-                        console.error("Gagal memuat pratinjau:", e);
-                    }
-                }
-            }, 100);
-        }
-
-        function showPage(pageKey) {
-            const page = pages[pageKey];
-            if (!page) return;
-
-            const contentArea = document.getElementById('content-area');
-            const breadcrumb = document.getElementById('breadcrumb');
-            
-            contentArea.innerHTML = `
-                <h1>${page.title}</h1>
-                <p class="page-desc">${page.desc}</p>
-                <div class="page-body">
-                    ${page.content}
+                <!-- Sertifikat 1 -->
+                <div class="w-full sm:w-72 group" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/60a3d6c0c308d315f29a85afb8d22518939077ecc3212f40c1b75f020ea73f5b.jpeg'])">
+                    <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 cursor-pointer shadow-lg">
+                        <div class="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                            <i class="fas fa-expand text-white text-3xl"></i>
+                        </div>
+                        <img loading="lazy" src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/db8900d6097d21a7b79a8dec3c30a0c52c2a3d2bb2a9712a50c49147c660fe16.jpeg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    </div>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest font-medium">Pelatihan Administrasi Linux</p>
+                        <p class="text-[10px] text-teal-500 mt-1 font-bold tracking-widest uppercase">Linux Admin</p>
+                    </div>
                 </div>
-            `;
 
-            breadcrumb.innerText = `DEVNOTES / ${page.title.toUpperCase()}`;
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                const clickAttr = item.getAttribute('onclick');
-                if (clickAttr && clickAttr.includes(pageKey)) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
+                <!-- Sertifikat 2 -->
+                <div class="w-full sm:w-72 group" onclick="openCertModal(['/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg', '/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/f554d80271d0758015da623a1b9ae9b13c108a361e7e29ae9b7b63e585f51965789745fbbcfaeb5554ebdf4a18babf295d1a426863e4f4a69d13dac8c49ba247.jpeg'])">
+                    <div class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 cursor-pointer shadow-lg">
+                        <div class="absolute inset-0 bg-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center">
+                            <i class="fas fa-expand text-white text-3xl"></i>
+                        </div>
+                        <img loading="lazy" src="/aboutme/eb0d166acbff5c4cf5ee93936bbb54e764fc6082d895d520073ac8584d12e9c0/e3f4bf204c4522cafb2777cfe0213482e9ae8949a37b83f1df04f4d63abcb443221834f3e6375fc0b4c799c5a52cbdb04ff9f7d514bdb1166ab47ddd7e25f115.jpeg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+                    </div>
+                    <div class="text-center mt-5">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest font-medium">Praktik Kerja Lapangan</p>
+                        <p class="text-[10px] text-teal-500 mt-1 font-bold tracking-widest uppercase">Junior Technician</p>
+                    </div>
+                </div>
 
-            lucide.createIcons();
-            if (pageKey === 'coding') updateLivePreview();
-            document.querySelector('main').scrollTop = 0;
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<footer class="py-10 border-t border-slate-800/50 text-center">
+    <p class="text-[10px] tracking-[0.3em] text-slate-600 uppercase">
+        © 2025 • Michellino Dayaqqova
+    </p>
+</footer>
+
+<script>
+    // Proteksi tetap dipertahankan
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === "F12" || (e.ctrlKey && (e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C') || e.key === 'u' || e.key === 's'))) {
+            e.preventDefault();
         }
+    });
+    document.addEventListener('dragstart', e => e.target.nodeName === 'IMG' && e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
 
-        function copyCode(btn) {
-            const code = btn.nextElementSibling.innerText;
-            const status = document.getElementById('status-msg');
-            const textArea = document.createElement("textarea");
-            textArea.value = code;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            btn.innerText = "TERSALIN!";
-            status.style.opacity = "1";
-            setTimeout(() => {
-                btn.innerText = "Salin";
-                status.style.opacity = "0";
-            }, 2000);
-        }
+    const modal = document.getElementById('cert-modal');
+    const modalContent = modal.querySelector('.modal-content');
 
-        window.onload = () => {
-            showPage('coding');
-        };
-    </script>
+    function openCertModal(imageUrls) {
+        modalContent.innerHTML = '';
+        imageUrls.forEach(url => {
+            const container = document.createElement('div');
+            container.className = 'modal-image-container';
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'modal-image';
+            img.loading = 'lazy';
+            container.appendChild(img);
+            modalContent.appendChild(container);
+        });
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+</script>
+
 </body>
 </html>
